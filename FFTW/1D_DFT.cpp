@@ -11,8 +11,8 @@ int main( int argc, char** argv ){
     fftw_plan       plan_f;
     fftw_plan       plan_b;
 
-    int             width = 3000, height = 4096, step;
-    unsigned char *img1_data = new unsigned char[width * height];
+    int             width = 3000, height = 4096;
+    double *img1_data = new double[width * height];
     
     // check for supplied argument
     if ( argc < 2 )  throw "Argument Exception";
@@ -41,11 +41,10 @@ int main( int argc, char** argv ){
     plan_b = fftw_plan_dft_1d( width * height, fft,     ifft, FFTW_BACKWARD, FFTW_ESTIMATE );
     
     // load img1's data to fftw input
-    for( int i = 0, k = 0 ; i < height ; i++ ) {
+    for( int i = 0 ; i < height ; i++ ) {
         for( int j = 0 ; j < width ; j++ ) {
-            data_in[k][0] = ( double )img1_data[i * step + j];
-            data_in[k][1] = 0.0;
-            k++;
+            data_in[i*width + j ][0] = ( double )img1_data[ i*width + j ];
+            data_in[i*width + j ][1] = 0.0;
         }
     }
     
@@ -56,9 +55,8 @@ int main( int argc, char** argv ){
     fftw_execute( plan_b );
     
     // normalize IFFT result
-    for( i = 0 ; i < ( width * height ) ; i++ ) {
+    for( int i = 0 ; i < ( width * height ) ; i++ ) {
         ifft[i][0] /= ( double )( width * height );
-	    cout << ifft[i][0] << endl;
     }
 
     // free memory
